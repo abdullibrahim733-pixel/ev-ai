@@ -1,0 +1,267 @@
+/* ══════════════════════════════════════════════
+   EV-AI — Autonomous Electric Vehicle Dashboard
+   ══════════════════════════════════════════════ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-primary: #0a0a1a;
+  --bg-card: #12122a;
+  --bg-panel: rgba(20, 20, 50, 0.9);
+  --text-primary: #e0e0f0;
+  --text-secondary: #8888aa;
+  --accent-electric: #00e5ff;
+  --accent-green: #00e676;
+  --accent-orange: #ff9100;
+  --accent-red: #ff1744;
+  --border-color: rgba(0, 229, 255, 0.15);
+  --font-mono: 'Courier New', 'Consolas', monospace;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ═══ HUD ═══ */
+#hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 48px;
+  padding: 0 20px;
+  background: rgba(0, 0, 0, 0.6);
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 100;
+  position: relative;
+}
+
+.hud-left { display: flex; align-items: center; gap: 10px; }
+.hud-left .logo-icon { font-size: 22px; }
+.hud-left h1 { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+.badge {
+  font-size: 10px;
+  background: rgba(0, 229, 255, 0.15);
+  color: var(--accent-electric);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  font-family: var(--font-mono);
+}
+
+.hud-center { display: flex; align-items: center; }
+.status-autonomous { color: var(--accent-green); font-weight: 600; font-size: 13px; letter-spacing: 1px; }
+.status-manual { color: var(--accent-orange); font-weight: 600; font-size: 13px; letter-spacing: 1px; }
+
+.hud-right { display: flex; align-items: center; }
+#hud-fps { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
+
+/* ═══ APP LAYOUT ═══ */
+#app {
+  display: flex;
+  height: calc(100vh - 48px - 36px);
+  width: 100vw;
+}
+
+/* ═══ DASHBOARD (LEFT) ═══ */
+#dashboard {
+  width: 320px;
+  min-width: 320px;
+  padding: 16px;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border-color);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+#dashboard h2 { font-size: 14px; color: var(--text-secondary); letter-spacing: 1px; font-weight: 600; }
+#dashboard h3 { font-size: 13px; color: var(--accent-electric); margin-bottom: 8px; font-weight: 500; }
+
+/* Dash cards grid */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.dash-card {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.dash-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-electric), transparent);
+  opacity: 0.5;
+}
+
+.speed-card::before { background: linear-gradient(90deg, transparent, var(--accent-green), transparent); opacity: 0.6; }
+.battery-card::before { background: linear-gradient(90deg, transparent, var(--accent-electric), transparent); opacity: 0.6; }
+
+.dash-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+.dash-value { font-size: 28px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); margin: 4px 0 2px; }
+.speed-card .dash-value { color: var(--accent-green); }
+.battery-card .dash-value { color: var(--accent-electric); }
+.dash-unit { font-size: 10px; color: var(--text-secondary); }
+
+/* Battery bar */
+.battery-bar {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.battery-fill {
+  height: 100%;
+  background: var(--accent-electric);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* AI Panel */
+.ai-panel, .sensor-panel {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.ai-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 13px;
+}
+.ai-row:last-child { border-bottom: none; }
+.ai-label { color: var(--text-secondary); }
+.ai-value { color: var(--accent-electric); font-family: var(--font-mono); font-size: 12px; }
+
+/* Sensors */
+.sensor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.sensor-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+.sensor-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.sensor-dot.active { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+.sensor-dot.warning { background: var(--accent-orange); box-shadow: 0 0 8px var(--accent-orange); }
+.sensor-dot.danger { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
+
+/* Controls */
+.controls-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 10px 0;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.btn-primary {
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--accent-electric);
+}
+.btn-primary:hover { background: rgba(0, 229, 255, 0.2); }
+.btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ═══ 3D CANVAS ═══ */
+#canvas-container {
+  flex: 1;
+  position: relative;
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+#p5-canvas-wrapper {
+  width: 100%;
+  height: 100%;
+}
+#p5-canvas-wrapper canvas { display: block; }
+
+#canvas-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  font-size: 13px;
+  color: var(--text-secondary);
+  pointer-events: none;
+  white-space: nowrap;
+}
+#canvas-overlay strong { color: var(--accent-electric); }
+#canvas-overlay.hidden { display: none; }
+
+/* ═══ FOOTER ═══ */
+footer {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid var(--border-color);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* ═══ SCROLLBAR ═══ */
+#dashboard::-webkit-scrollbar { width: 4px; }
+#dashboard::-webkit-scrollbar-track { background: transparent; }
+#dashboard::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 768px) {
+  #dashboard { width: 100%; min-width: unset; max-height: 50vh; border-right: none; border-bottom: 1px solid var(--border-color); }
+  #app { flex-direction: column; }
+  .dash-grid { grid-template-columns: 1fr 1fr; }
+}

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EV-AI — Autonomous Electric Vehicle</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/addons/p5.sound.min.js"></script>
+</head>
+<body>
+
+  <!-- TOP HUD -->
+  <header id="hud">
+    <div class="hud-left">
+      <span class="logo-icon">⚡</span>
+      <h1>EV-AI</h1>
+      <span class="badge">v1.0</span>
+    </div>
+    <div class="hud-center">
+      <span id="hud-status" class="status-autonomous">● AUTONOMOUS</span>
+    </div>
+    <div class="hud-right">
+      <span id="hud-fps">60 FPS</span>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main id="app">
+    <!-- LEFT: DASHBOARD -->
+    <section id="dashboard">
+      <h2>📊 Vehicle Dashboard</h2>
+
+      <div class="dash-grid">
+        <div class="dash-card speed-card">
+          <div class="dash-label">Speed</div>
+          <div class="dash-value" id="dash-speed">0</div>
+          <div class="dash-unit">km/h</div>
+        </div>
+        <div class="dash-card battery-card">
+          <div class="dash-label">Battery</div>
+          <div class="dash-value" id="dash-battery">85</div>
+          <div class="dash-unit">%</div>
+          <div class="battery-bar">
+            <div class="battery-fill" id="battery-fill" style="width:85%"></div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-label">Steering</div>
+          <div class="dash-value" id="dash-steering">0°</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-label">Range</div>
+          <div class="dash-value" id="dash-range">--</div>
+          <div class="dash-unit">km</div>
+        </div>
+      </div>
+
+      <!-- AI State -->
+      <div class="ai-panel">
+        <h3>🧠 AI Agent State</h3>
+        <div class="ai-row">
+          <span class="ai-label">Mode:</span>
+          <span id="ai-mode" class="ai-value">Path Following</span>
+        </div>
+        <div class="ai-row">
+          <span class="ai-label">Decision:</span>
+          <span id="ai-decision" class="ai-value">Accelerating</span>
+        </div>
+        <div class="ai-row">
+          <span class="ai-label">Confidence:</span>
+          <span id="ai-confidence" class="ai-value">92%</span>
+        </div>
+        <div class="ai-row">
+          <span class="ai-label">Obstacles:</span>
+          <span id="ai-obstacles" class="ai-value">0 detected</span>
+        </div>
+        <div class="ai-row">
+          <span class="ai-label">Waypoint:</span>
+          <span id="ai-waypoint" class="ai-value">3 / 12</span>
+        </div>
+      </div>
+
+      <!-- Sensor Visualization -->
+      <div class="sensor-panel">
+        <h3>📡 Sensor Array</h3>
+        <div class="sensor-grid">
+          <div class="sensor-item"><span class="sensor-dot" id="sensor-fl"></span>Front-L</div>
+          <div class="sensor-item"><span class="sensor-dot" id="sensor-fm"></span>Front</div>
+          <div class="sensor-item"><span class="sensor-dot" id="sensor-fr"></span>Front-R</div>
+          <div class="sensor-item"><span class="sensor-dot" id="sensor-sl"></span>Side-L</div>
+          <div class="sensor-item"><span class="sensor-dot" id="sensor-sr"></span>Side-R</div>
+          <div class="sensor-item"><span class="sensor-dot" id="sensor-rl"></span>Rear-L</div>
+          <div class="sensor-item"><span class="sensor-dot" id="sensor-rm"></span>Rear</div>
+          <div class="sensor-item"><span class="sensor-dot" id="sensor-rr"></span>Rear-R</div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-row">
+        <button id="reset-btn" class="btn-secondary">⟳ Reset</button>
+        <button id="toggle-btn" class="btn-primary">⏸ Pause</button>
+        <button id="camera-btn" class="btn-secondary">🎥 Toggle Cam</button>
+      </div>
+    </section>
+
+    <!-- RIGHT: 3D CANVAS -->
+    <section id="canvas-container">
+      <div id="p5-canvas-wrapper"></div>
+      <div id="canvas-overlay">
+        <p>⚡ <strong>EV-AI</strong> — Autonomous electric vehicle simulation</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>EV-AI — AI-controlled electric vehicle | Version Extreme Cooperation 🇹🇿</p>
+  </footer>
+
+  <script src="ev_model.js"></script>
+  <script src="ai_agent.js"></script>
+  <script src="sketch.js"></script>
+</body>
+</html>
