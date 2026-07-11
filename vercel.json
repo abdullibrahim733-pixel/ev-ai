@@ -5,6 +5,10 @@
       "src": "api/index.py",
       "use": "@vercel/python",
       "config": { "maxLambdaSize": "15mb" }
+    },
+    {
+      "src": "*.{html,css,js,json,svg,png,jpg,ico,glb,obj}",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
