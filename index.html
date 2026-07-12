@@ -253,6 +253,28 @@
             <span class="metric-val" id="metric-brake">0.00</span>
           </div>
         </div>
+
+        <!-- ─── AI Co-pilot Chat ────────────── -->
+        <div class="copilot-section" style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span style="color:#e0e0f0; font-size:11px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">AI Co-pilot <span style="color:#00e5ff; font-weight:400; text-transform:none;">— powered by Gemini</span></span>
+          </div>
+          <div id="copilot-messages" style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.06); border-radius:6px; padding:8px; height:120px; overflow-y:auto; margin-bottom:8px; font-size:12px; line-height:1.5;">
+            <div class="copilot-msg system" style="color:#8888aa; padding:4px 0;">
+              <span style="color:#00e5ff;">●</span> EV-AI Co-pilot ready. Ask me about the vehicle state.
+            </div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <input id="copilot-input" type="text" placeholder="Ask the AI co-pilot..." style="flex:1; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.08); border-radius:4px; padding:6px 10px; color:#e0e0f0; font-size:12px; font-family:inherit; outline:none;" />
+            <button id="copilot-send" style="background:rgba(0,229,255,0.15); border:1px solid rgba(0,229,255,0.3); border-radius:4px; padding:6px 12px; color:#00e5ff; font-size:12px; cursor:pointer; font-family:inherit; white-space:nowrap;">
+              Send
+            </button>
+          </div>
+          <div style="margin-top:4px; display:flex; gap:8px; font-size:10px; color:#555;">
+            <span id="copilot-status">API: not configured</span>
+          </div>
+        </div>
       </div>
     </aside>
 
@@ -323,6 +345,7 @@
 
   <script src="ev_model.js"></script>
   <script src="ai_agent.js"></script>
+  <script src="ai_co-pilot.js"></script>
   <script src="sketch.js"></script>
 </body>
 </html>

@@ -7,3 +7,8 @@ frame_*.png
 /tmp/
 .DS_Store
 *.mp4
+.vercel
+.env*
+
+# Dev
+.firecrawl/
