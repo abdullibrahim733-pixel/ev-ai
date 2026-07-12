@@ -65,8 +65,8 @@ class AIAgent {
       const p3 = pts[(i + 2) % pts.length];
 
       for (let t = 0; t < 1; t += 0.25) {
-        const x = catmullRom(t, p0.x, p1.x, p2.x, p3.x);
-        const z = catmullRom(t, p0.z, p1.z, p2.z, p3.z);
+        const x = this.catmullRom(t, p0.x, p1.x, p2.x, p3.x);
+        const z = this.catmullRom(t, p0.z, p1.z, p2.z, p3.z);
         smoothPts.push(createVector(x, 0, z));
       }
     }

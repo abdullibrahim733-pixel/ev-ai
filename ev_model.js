@@ -269,4 +269,13 @@ class EVModel {
   getPosition3D() {
     return createVector(this.pos.x, this.groundClearance + this.height * 0.3, this.pos.z);
   }
+
+  getSensorPosition(offset) {
+    const cos_r = cos(this.rotation);
+    const sin_r = sin(this.rotation);
+    const x = this.pos.x + offset[0] * cos_r - offset[2] * sin_r;
+    const z = this.pos.z + offset[0] * sin_r + offset[2] * cos_r;
+    const y = this.groundClearance + this.height * 0.5 + (offset[1] || 0);
+    return createVector(x, y, z);
+  }
 }
