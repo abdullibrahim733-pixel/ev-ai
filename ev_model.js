@@ -29,63 +29,30 @@ class EVModel {
     this.useProcedural = false;  // fallback to primitives
     this.loadStartTime = millis();
 
-    // Start loading from backend
-    this.loadFromBackend();
+    // Start loading 3D model
+    this.loadModel();
   }
 
-  async loadFromBackend() {
-    // Try to load the 3D model from the Python backend
-    const backends = [
-      window.location.origin + '/api/model?format=obj',
-      'http://localhost:8000/api/model?format=obj',
-      'http://127.0.0.1:8000/api/model?format=obj',
-    ];
+  async loadModel() {
+    // Try loading the local OBJ file directly
+    const objUrl = 'ev_model.obj';
+    console.log(`[EV-AI] Loading 3D model: ${objUrl}`);
 
-    for (const url of backends) {
-      try {
-        const resp = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(2000) });
-        if (resp.ok) {
-          console.log(`[EV-AI] Loading 3D model from: ${url}`);
-          this.loadedModel = await new Promise((resolve, reject) => {
-            const model = loadModel(
-              url,
-              () => resolve(model),
-              () => reject(new Error('loadModel failed'))
-            );
-            // Safety timeout
-            setTimeout(() => reject(new Error('loadModel timeout')), 5000);
-          });
-          this.modelReady = true;
-          console.log('[EV-AI] 3D model loaded successfully');
-          return;
-        }
-      } catch (e) {
-        console.log(`[EV-AI] Backend at ${url} not available`);
-      }
-    }
-
-    // Fallback: try loading static OBJ from GitHub Pages
     try {
-      const staticUrl = window.location.origin + '/ev_model.obj';
-      console.log(`[EV-AI] Trying static model: ${staticUrl}`);
       this.loadedModel = await new Promise((resolve, reject) => {
         const model = loadModel(
-          staticUrl,
+          objUrl,
           () => resolve(model),
-          () => reject(new Error('static model failed'))
+          () => reject(new Error('loadModel callback failed'))
         );
-        setTimeout(() => reject(new Error('static model timeout')), 5000);
+        setTimeout(() => reject(new Error('loadModel timeout')), 8000);
       });
       this.modelReady = true;
-      console.log('[EV-AI] Static model loaded');
-      return;
+      console.log('[EV-AI] 3D model loaded successfully');
     } catch (e) {
-      console.log('[EV-AI] Static model not available');
+      console.log('[EV-AI] OBJ load failed, using procedural model:', e.message);
+      this.useProcedural = true;
     }
-
-    // Ultimate fallback: procedural rendering
-    console.log('[EV-AI] Using procedural model');
-    this.useProcedural = true;
   }
 
   // ─── Render ─────────────────────────────────
@@ -259,6 +226,65 @@ class EVModel {
       text(`Loading 3D model... ${elapsed.toFixed(0)}s`, 0, 0);
       pop();
     }
+  }
+
+  // ─── Physics Update ─────────────────────────
+  update(dt, steerInput, throttleInput, brakeInput) {
+    const maxSpeed = 25;
+    const maxSteer = 0.6;
+    const accelRate = 12;
+    const brakeRate = 20;
+    const friction = 2.5;
+    const steerSpeed = 3.0;
+
+    // Steering — smooth interpolation toward target
+    const targetSteer = steerInput * maxSteer;
+    this.steerAngle += (targetSteer - this.steerAngle) * constrain(steerInput === 0 ? 5 : steerSpeed, 0, 8) * dt;
+    if (abs(this.steerAngle) < 0.001) this.steerAngle = 0;
+
+    // Throttle
+    if (throttleInput > 0) {
+      this.speed += throttleInput * accelRate * dt;
+    } else if (throttleInput < 0) {
+      // Reverse
+      this.speed += throttleInput * accelRate * 0.5 * dt;
+    }
+
+    // Brake
+    if (brakeInput > 0) {
+      if (this.speed > 0) {
+        this.speed = max(0, this.speed - brakeInput * brakeRate * dt);
+      } else {
+        this.speed = min(0, this.speed + brakeInput * brakeRate * dt);
+      }
+    }
+
+    // Friction / drag
+    if (throttleInput === 0 && brakeInput === 0) {
+      if (this.speed > 0) {
+        this.speed = max(0, this.speed - friction * dt);
+      } else if (this.speed < 0) {
+        this.speed = min(0, this.speed + friction * dt);
+      }
+    }
+
+    // Clamp speed
+    this.speed = constrain(this.speed, -maxSpeed * 0.3, maxSpeed);
+
+    // Steering effect on rotation — proportional to speed
+    const speedFactor = constrain(abs(this.speed) / 8, 0, 1);
+    this.rotation += this.steerAngle * speedFactor * dt * 2.0;
+
+    // Update position
+    this.pos.x += cos(this.rotation) * this.speed * dt;
+    this.pos.z += sin(this.rotation) * this.speed * dt;
+
+    // Battery drain — faster at higher speeds
+    const drain = (abs(this.speed) * 0.01 + 0.02) * dt;
+    this.battery = max(0, this.battery - drain);
+
+    // Brake light state
+    this.brakeActive = brakeInput > 0.1;
   }
 
   // ─── Physics helpers ────────────────────────
