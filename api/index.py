@@ -10,7 +10,7 @@ from urllib.parse import urlparse, parse_qs
 
 # ─── Google AI (Gemini) Configuration ──────────────
 GOOGLE_AI_API_KEY = os.environ.get("GOOGLE_AI_API_KEY", "")
-GEMINI_MODEL = "gemini-2.0-flash"
+GEMINI_MODEL = "gemini-1.5-flash"
 GEMINI_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
 
 SYSTEM_PROMPT = """You are EV-AI Co-pilot, the conversational AI assistant inside an autonomous electric vehicle simulation.
